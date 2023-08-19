@@ -47,11 +47,37 @@ class Category:
         print('\n')
 
 def spend_chart(cat_names):
+    def catch(k, i):
+        try:
+            return k[i]
+        except:
+            return ' '
+    
     amounts = [p['amount'] for name in cat_names for p in name.ledger if p['amount'] < 0]
     spent = {}
-    [spent.setdefault(name.name, []).append(p['amount']) for name in cat_names for p in name.ledger if p['amount'] < 0]
+    [spent.setdefault(name.name, []).append(p['amount']) for name in cat_names for p in name.ledger if p['amount'] < 0 and not p['description'].startswith('Transfer')]
     spent = {k:sum(v) for k, v in spent.items()}
-    totalspent = sum(spent.values())
-    med = totalspent 
+    totalSpent = sum(spent.values())
+    percentSpent = {k:(int((v/totalSpent)*100)) for k, v in spent.items()}
+    sortedwords = sorted([k for k in percentSpent.keys()], key=len)
+    letterList = [catch(k, i) for i in range(len(sortedwords[-1])) for k in percentSpent.keys()]
 
-    print(spent, amounts, totalspent)
+    z = 110
+    for y in range(11):
+        z -= 10
+        print(f'{z}|'.rjust(4), end='')
+        for k, v in percentSpent.items():
+            if v >= z:
+                print(' o ', end='')
+        else:
+            print('')
+    else:
+        print('    '.ljust(len(spent)*4+2, '-'))
+        for i in range(0, len(letterList), len(percentSpent)):
+            print('    ', end='')
+            for let in letterList[i:i+len(percentSpent)]:
+                print(f' {let}', end=' ')
+            else:
+                print('')
+
+        

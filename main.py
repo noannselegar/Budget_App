@@ -1,24 +1,24 @@
 from budget import *
+from collections import defaultdict
+import sys
 
-food = Category('FOOD')
-shopping = Category('SHOPPING')
-clothing = Category('CLOTHING')
+categoryDict = defaultdict()
 
+print('Welcome! What do you wanna do? ')
+print('1) Create new category')
+print('2) Deposit')
+print('3) Withdraw')
+print('4) Transfer')
+print('5) Check the logs of a category')
+print('6) Check Spend Chart')
+print('7) Quit')
+command = input()
 
-clothing.deposit(100, 'initial deposit')
-shopping.deposit(300, 'initial deposit')
-food.deposit(600, 'initial deposit')
+if command == '1':
+    cat = input('Category name: ')
+    categoryDict[cat] = Category(cat)
+if command == '7':
+    exit()
 
-food.withdraw(10.50)
-shopping.withdraw(11.50)
-food.withdraw(5.50)
-shopping.withdraw(70)
-clothing.withdraw(99)
-food.transfer(75.89, shopping)
-
-#food.log()
-#shopping.log()
-#clothing.log()
-
-
-#spend_chart([food, shopping, clothing])
+print(categoryDict)
+#spend_chart([food, shopping, clothing, rent])
