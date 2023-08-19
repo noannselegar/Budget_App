@@ -37,7 +37,7 @@ class Category:
             print('Not sufficient funds')
             return False
     
-    def list(self):
+    def log(self):
         print(self.name.center(30, '*'))
         for pair in self.ledger:
             print(f'{pair["description"].ljust(20)}{str(pair["amount"]).rjust(10)}', end='')
@@ -48,5 +48,10 @@ class Category:
 
 def spend_chart(cat_names):
     amounts = [p['amount'] for name in cat_names for p in name.ledger if p['amount'] < 0]
-    spent = {name.name:p['amount'] for name in cat_names for p in name.ledger if p['amount'] < 0}
-    print(spent, amounts)
+    spent = {}
+    [spent.setdefault(name.name, []).append(p['amount']) for name in cat_names for p in name.ledger if p['amount'] < 0]
+    spent = {k:sum(v) for k, v in spent.items()}
+    totalspent = sum(spent.values())
+    med = totalspent 
+
+    print(spent, amounts, totalspent)
