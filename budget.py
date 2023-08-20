@@ -1,3 +1,5 @@
+import pickle
+
 class Category:
     def __init__(self, name):
         self.name = name
@@ -5,15 +7,17 @@ class Category:
         self.funds = 0
 
     def check_funds(self, amount):
-        if amount <= self.funds: return True
+        if float(amount) <= self.funds: return True
         else: return False
     
     def deposit(self, amount, description=''):
+        amount = float(amount)
         self.funds += amount
         self.ledger.append({'amount':amount, 'description':description})
 
 
     def withdraw(self, amount, description=''):
+        amount = float(amount)
         if self.check_funds(amount):
             self.funds -= amount
             self.ledger.append({'amount':-amount, 'description':description})
@@ -27,6 +31,7 @@ class Category:
         return self.funds
     
     def transfer(self, amount, varname):
+        amount = float(amount)
         if self.check_funds(amount):
             self.funds -= amount
             self.ledger.append({'amount':-amount, 'description':f'Transfer to {varname.name}'})
@@ -43,8 +48,22 @@ class Category:
             print(f'{pair["description"].ljust(20)}{str(pair["amount"]).rjust(10)}', end='')
             print('')
         print('-'.center(30, '-'))
-        print('Total: ', float(self.funds))
+        print(f'Total: {float(self.funds):.2f}')
         print('\n')
+
+def save_dict(obj):
+    try:
+        with open("data.pickle", "wb") as f:
+            pickle.dump(obj, f, protocol=pickle.HIGHEST_PROTOCOL)
+    except Exception as ex:
+        print("Error during pickling object (Possibly unsupported):", ex)
+
+def load_dict(filename):
+    try:
+        with open(filename, "rb") as f:
+            return pickle.load(f)
+    except Exception as ex:
+        print("Error during unpickling object (Possibly unsupported):", ex)
 
 def spend_chart(cat_names):
     def catch(k, i):
@@ -53,7 +72,6 @@ def spend_chart(cat_names):
         except:
             return ' '
     
-    amounts = [p['amount'] for name in cat_names for p in name.ledger if p['amount'] < 0]
     spent = {}
     [spent.setdefault(name.name, []).append(p['amount']) for name in cat_names for p in name.ledger if p['amount'] < 0 and not p['description'].startswith('Transfer')]
     spent = {k:sum(v) for k, v in spent.items()}
@@ -72,7 +90,7 @@ def spend_chart(cat_names):
         else:
             print('')
     else:
-        print('    '.ljust(len(spent)*4+2, '-'))
+        print('    '.ljust(len(spent)*4, '-'))
         for i in range(0, len(letterList), len(percentSpent)):
             print('    ', end='')
             for let in letterList[i:i+len(percentSpent)]:
